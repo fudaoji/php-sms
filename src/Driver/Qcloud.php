@@ -4,7 +4,7 @@
  * Script Name: Qcloud.php
  * Create: 2017/8/23 下午3:12
  * Description:
- * Author: Doogie<461960962@qq.com>
+ * Author: rocky<461960962@qq.com>
  */
 namespace Dao\Sms\Driver;
 use ky\Sms\Qcloud\MultiSender;

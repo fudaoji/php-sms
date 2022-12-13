@@ -1,10 +1,10 @@
 <?php
 /**
- * Script name: Sms.php
+ * Script name: Shiyuan.php
  * Created by PhpStorm.
  * Create: 2016/7/14 14:37
  * Description: 手机短信
- * Author: Doogie<461960962@qq.com>
+ * Author: Rocky<461960962@qq.com>
  */
 
 namespace Dao\Sms\Driver;

@@ -1,11 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * Script Name: Acloud.php
- * Create: 2018/4/20 15:28
- * Description:
- * Author: Jason<dcq@kuryun.cn>
- */
+
 namespace Dao\Sms\Driver;
 
 require_once dirname(__DIR__) . '/Sms/Acloud/vendor/autoload.php';

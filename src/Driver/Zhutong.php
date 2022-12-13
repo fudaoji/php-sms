@@ -4,7 +4,7 @@
  * Created by PhpStorm.
  * Create: 2016/7/14 14:37
  * Description: 助通科技短信
- * Author: Doogie<461960962@qq.com>
+ * Author: Rocky<461960962@qq.com>
  */
 
 namespace Dao\Sms\Driver;
@@ -85,7 +85,7 @@ class Zhutong
         }else{
             $mobile = trim($mobile, ',');
         }
-        
+
         if(strpos($mobile, ',') !== false){
             $this->apiUrl = 'http://hy.mix2.zthysms.com/sendSmsBatch.do';
         }
