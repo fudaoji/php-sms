@@ -10,6 +10,7 @@ composer require fudaoji/php-sms
 ## 用法：
 ~~~php
 use Dao\Sms\Sms;
+
 $content = '验证码：2323，打死也不能告诉别人。【酷云】';
 $mobile = '13511111111';  //单发
 //$mobile = ['13511111111', '13422222222']; //群发1
