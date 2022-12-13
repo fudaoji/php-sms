@@ -1,52 +1,26 @@
 # dao-upload
 
-用于PHP文件上传（PHP 7.1+），支持本地、七牛等上传方式。
+聚合短信发送类库，集合了腾讯云、移动、助通科技、示远科技 等。
 
 ## 安装
 ~~~
-composer require fudaoji/php-upload
+composer require fudaoji/php-sms
 ~~~
 
 ## 用法：
 ~~~php
-use Dao\Upload\Upload;
-//上传本地
-$config = [
-        'mimes'         =>  [], //允许上传的文件MiMe类型
-        'maxSize'       =>  0, //上传的文件大小限制 (0-不做限制)
-        'exts'          =>  [], //允许上传的文件后缀
-        'autoSub'       =>  true, //自动子目录保存文件
-        'subName'       =>  ['date', 'Y-m-d'], //子目录创建方式，[0]-函数名，[1]-参数，多个参数使用数组
-        'rootPath'      =>  './public/uploads/', //保存根路径
-        'savePath'      =>  '', //保存路径
-        'saveName'      =>  ['uniqid', ''], //上传文件命名规则，[0]-函数名，[1]-参数，多个参数使用数组
-        'saveExt'       =>  '', //文件保存后缀，空则使用原后缀
-        'replace'       =>  false, //存在同名是否覆盖
-    ];
+use Dao\Sms\Sms;
+$content = '验证码：2323，打死也不能告诉别人。【酷云】';
+$mobile = '13511111111'; 
+//$mobile = ['13511111111', '13422222222'];
+//$mobile = '13511111111,13422222222';
 
-$Upload = new Uploader($config, 'local', []);
-$info   = $Upload->upload($files, '文件名前缀，选填');  //false || [{}]
-
-//上传七牛
-$config = [
-        'mimes'         =>  [], //允许上传的文件MiMe类型
-        'maxSize'       =>  0, //上传的文件大小限制 (0-不做限制)
-        'exts'          =>  [], //允许上传的文件后缀
-        'autoSub'       =>  true, //自动子目录保存文件
-        'subName'       =>  ['date', 'Y-m-d'], //子目录创建方式，[0]-函数名，[1]-参数，多个参数使用数组
-        'rootPath'      =>  '', //保存根路径
-        'savePath'      =>  '', //保存路径
-        'saveName'      =>  ['uniqid', ''], //上传文件命名规则，[0]-函数名，[1]-参数，多个参数使用数组
-        'saveExt'       =>  '', //文件保存后缀，空则使用原后缀
-        'replace'       =>  false, //存在同名是否覆盖
-    ];
-//七牛的配置
-$driver_config = [
-    'accessKey' => '',
-    'secrectKey' => '',
-    'bucket' => '',
-    'domain' => '',
-];
-$Upload = new Uploader($config, 'qiniu', $driver_config);
-$info   = $Upload->upload($files, '文件名前缀，选填');  //false || [{}]
+$sms = new Sms('账号', '密码', 'shiyuan');   //使用示远短信
+$sms = new Sms('账号', '密码', 'zhutong');   //使用助通短信
+$sms = new Sms('账号', '密码', 'yunxin');   //使用中国移动短信，记得要先在对应平台设置短信模版
+$sms = new Sms('账号', '密码', 'qcloud');   //使用腾讯云,记得要先在对应平台设置短信模版
+$res = $sms->send($mobile, $content);
+if($res !== true){
+    var_dump($sms->getError());  //错误信息
+}
 ~~~
