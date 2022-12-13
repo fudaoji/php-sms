@@ -1,21 +1,13 @@
 <?php
 /**
  * Created by PhpStorm.
- * Script Name: Sms.php
+ * Script Name: Yunxin.php
  * Create: 16/10/12 下午7:07
  * Description: 移动短信接口
  * Author: Doogie<461960962@qq.com>
- * 例子:
- * //电话号码和code值可变,其他不变
- *  $sms = new Sms();
- *  $result = $sms->send('15659827559', ['code' => 3216],'389903');
- *  if($result['stat']=='100') {
- *      echo '发送成功';
- *  } else {
- *      echo '发送失败:'.$result['stat'].'('.$result['message'].')';
- *  }
  */
 namespace  Dao\Sms\Driver;
+
 class Yunxin
 {
     /**
@@ -73,10 +65,8 @@ class Yunxin
     public function __construct($uid = '', $pwd = '')
     {
         //用户和密码可直接写在类里
-        $def_uid = 'mgyun';
-        $def_pwd = 'sms@mgy';
-        $this->uid	= $uid ?: $def_uid;
-        $this->pwd	= $pwd ?: $def_pwd;
+        $this->uid	= $uid;
+        $this->pwd	= $pwd;
         $this->apiURL = self::API_URL;
         $this->format = 'json';
     }
@@ -88,7 +78,7 @@ class Yunxin
     {
         return array(
             'uid'		=> $this->uid,
-            'pwd'		=> md5($this->pwd.$this->uid),
+            'pwd'		=> $this->pwd,  //md5(登录密码+用户名)
             'format'	=> $this->format,
         );
     }
