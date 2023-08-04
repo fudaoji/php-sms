@@ -2,16 +2,14 @@
 
 namespace Dao\Sms\Driver;
 
-require_once dirname(__DIR__) . '/Sms/Acloud/vendor/autoload.php';
-use \Aliyun\Core\Config;
-use Aliyun\Core\Profile\DefaultProfile;
-use Aliyun\Core\DefaultAcsClient;
-use Aliyun\Api\Sms\Request\V20170525\SendSmsRequest;
-use Aliyun\Api\Sms\Request\V20170525\SendBatchSmsRequest;
-use Aliyun\Api\Sms\Request\V20170525\QuerySendDetailsRequest;
-use ky\Logger;
-//加载区域结点配置
-Config::load();
+use AlibabaCloud\SDK\Dysmsapi\V20170525\Dysmsapi;
+use AlibabaCloud\SDK\Dysmsapi\V20170525\Models\SendBatchSmsRequest;
+use \Exception;
+use AlibabaCloud\Tea\Exception\TeaError;
+use AlibabaCloud\Tea\Utils\Utils;
+use Darabonba\OpenApi\Models\Config;
+use AlibabaCloud\SDK\Dysmsapi\V20170525\Models\SendSmsRequest;
+use AlibabaCloud\Tea\Utils\Utils\RuntimeOptions;
 
 class Acloud
 {
@@ -19,59 +17,91 @@ class Acloud
     private $accessKeySecret;
     private $client;
     private $error;
+    private $runtime;
 
     /**
      * 初始化
      * @param string $accessKeyId
      * @param string $accessKeySecret
-     * @author Jason<dcq@kuryun.cn>
+     * @author fudaoji<fdj@kuryun.cn>
      */
-    public function __construct($accessKeyId = '', $accessKeySecret = '') {
-        $product = "Dysmsapi";   //产品名称
-        $domain = "dysmsapi.aliyuncs.com";   //产品域名
-        $region = "cn-hangzhou";   //Region
-        $endPointName = "cn-hangzhou";   // 服务结点
-        $this->accessKeyId = empty($accessKeyId) ? 'LTAIVUSQfgrjbNkQ' : $accessKeyId;
-        $this->accessKeySecret = empty($accessKeySecret) ? 'KJI8zDjUUY3niLctiAqOQLAFolcUvA' : $accessKeySecret;
+    public function __construct($accessKeyId = '', $accessKeySecret = '', $options = []) {
+        $config = new Config([
+            // 必填，您的 AccessKey ID
+            "accessKeyId" => $accessKeyId,
+            // 必填，您的 AccessKey Secret
+            "accessKeySecret" => $accessKeySecret
+        ]);
+        // Endpoint 请参考 https://api.aliyun.com/product/Dysmsapi
+        $config->endpoint = $options['endpoint'] ?? "dysmsapi.aliyuncs.com";
+        $this->client = new Dysmsapi($config);
 
-        //初始化acsClient,暂不支持region化
-        $profile = DefaultProfile::getProfile($region, $accessKeyId, $accessKeySecret);
-        //增加服务结点
-        DefaultProfile::addEndpoint($endPointName, $region, $product, $domain);
-        //初始化AcsClient用于发起请求
-        $this->client = new DefaultAcsClient($profile);
+        $this->runtime = new RuntimeOptions();
+        isset($options['runtime_maxidleconns']) && $this->runtime->maxIdleConns   = $options['runtime_maxidleconns'];
+        isset($options['runtime_connecttimeout']) && $this->runtime->connectTimeout = $options['runtime_connecttimeout'];
+        isset($options['runtime_readtimeout']) && $this->runtime->readTimeout    = $options['runtime_readtimeout'];
     }
 
     /**
      * 发送短信
-     * @param string $mobile
+     * @param string|array $mobile
      * @param array $content
      * @return mixed
      * @author Jason<dcq@kuryun.cn>
      */
     public function send($mobile='', $content=[]) {
-        //初始化SendSmsRequest实例用于设置发送短信的参数
-        $request = new SendSmsRequest();
-        //必填，设置短信接收号码
-        $request->setPhoneNumbers($mobile);
-        //必填，设置签名名称，应严格按"签名名称"填写
-        $request->setSignName($content['sign_name']);
-        //必填，设置模板CODE，应严格按"模板CODE"填写
-        $request->setTemplateCode($content['template_code']);
-        //可选，设置模板参数, 假如模板中存在变量需要替换则为必填项
-        $request->setTemplateParam(json_encode($content['template_param'], JSON_UNESCAPED_UNICODE));
-		
-        //发起访问请求
-        $acsResponse = $this->client->getAcsResponse($request);
-		
-		$rsp = json_decode( json_encode($acsResponse),true);
-		if($rsp['Code'] == 'OK'){
-			return true;
-		}else{
-			$this->setError($rsp['Code']);
-			Logger::write(json_encode($rsp));
-			return false;
-		}
+        try {
+            if(is_string($mobile)){
+                $mobile = explode(',', $mobile);
+            }
+            if(count($mobile) <= 1){
+                $mobile = $mobile[0];
+                //初始化SendSmsRequest实例用于设置发送短信的参数
+                $request = new SendSmsRequest();
+                //必填，设置短信接收号码
+                $request->phoneNumbers = $mobile;
+                //必填，设置签名名称，应严格按"签名名称"填写
+                $request->signName = $content['sign_name'] ?? '';
+                //必填，设置模板CODE，应严格按"模板CODE"填写
+                $request->templateCode = $content['template_code'] ?? '';
+                //可选，设置模板参数, 假如模板中存在变量需要替换则为必填项
+                if(! empty($content['template_param'])){
+                    $request->templateParam = json_encode($content['template_param'], JSON_UNESCAPED_UNICODE);
+                }
+                // 复制代码运行请自行打印 API 的返回值
+                $response = $this->client->sendSmsWithOptions($request, $this->runtime);
+            }else{
+                $mobile = json_encode($mobile);
+                $sign_name = json_encode($content['sign_name'], JSON_UNESCAPED_UNICODE);
+                //初始化SendSmsRequest实例用于设置发送短信的参数
+                $request = new SendBatchSmsRequest();
+                //必填，设置短信接收号码
+                $request->phoneNumberJson = $mobile;
+                //必填，设置签名名称，应严格按"签名名称"填写
+                $request->signNameJson = $sign_name;
+                //必填，设置模板CODE，应严格按"模板CODE"填写
+                $request->templateCode = $content['template_code'] ?? '';
+                //可选，设置模板参数, 假如模板中存在变量需要替换则为必填项
+                if(! empty($content['template_param'])){
+                    $request->templateParamJson =  json_encode($content['template_param'], JSON_UNESCAPED_UNICODE);
+                }
+                // 复制代码运行请自行打印 API 的返回值
+                $response = $this->client->sendBatchSmsWithOptions($request, $this->runtime);
+            }
+
+            $resp = $response->toMap();
+            if(isset($resp['body']['Code']) && $resp['body']['Code']==='OK'){
+                return true;
+            }else{
+                $this->error = $resp['body']['Message'];
+            }
+        } catch (Exception $error) {
+            if (!($error instanceof TeaError)) {
+                $error = new TeaError([], $error->getMessage(), $error->getCode(), $error);
+            }
+            $this->error = $error->message;
+            return false;
+        }
     }
 
     /**

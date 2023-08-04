@@ -3,20 +3,24 @@
  * Created by PhpStorm.
  * Script Name: Qcloud.php
  * Create: 2017/8/23 下午3:12
- * Description:
+ * Description: 腾讯sms
  * Author: rocky<461960962@qq.com>
  */
 namespace Dao\Sms\Driver;
-use ky\Sms\Qcloud\MultiSender;
+use Dao\Sms\Driver\Qcloud\MultiSender;
 
 class Qcloud
 {
     private $appId;
     private $appKey;
     private $error;
-    function __construct($appid='', $appkey='') {
+    private $nationCode = '86';
+    private $type = 0;
+    
+    function __construct($appid='', $appkey='', $options = []) {
         $this->appId = $appid;
         $this->appKey = $appkey;
+        empty($options['nation_code']) && $this->nationCode = $options['nation_code'];
     }
 
     /**
@@ -32,7 +36,7 @@ class Qcloud
             $mobile = trim($mobile, ',');
             $mobile = explode(',', $mobile);
         }
-        $result = $sender->send(0, "86", (array)$mobile, $content);
+        $result = $sender->send($this->type, $this->nationCode, (array)$mobile, $content);
         $rsp = json_decode($result, true);
         if($rsp['result'] == 0){
             return true;

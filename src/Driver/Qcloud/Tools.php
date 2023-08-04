@@ -6,7 +6,7 @@
  * Description: 工具
  * Author: Doogie<461960962@qq.com>
  */
-namespace ky\Sms\Qcloud;
+namespace Dao\Sms\Driver\Qcloud;
 
 class Tools
 {

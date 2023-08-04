@@ -8,10 +8,16 @@
  * e.g:
  * $content = '验证码：2323，打死也不能告诉别人。【酷云】';
  * $mobile = '13511111111';
- * $sms = new \ky\Sms('账号', '密码', 'shiyuan');   //使用示远短信
- * $sms = new \ky\Sms('账号', '密码', 'zhutong');   //使用助通短信
- * $sms = new \ky\Sms('账号', '密码', 'yunxin');   //使用中国移动短信，记得要先在对应平台设置短信模版
- * $sms = new \ky\Sms('账号', '密码', 'qcloud');   //使用腾讯云,记得要先在对应平台设置短信模版
+ * $sms = new \Dao\Sms('账号', '密码', 'shiyuan');   //使用示远短信
+ * $sms = new \Dao\Sms('账号', '密码', 'zhutong');   //使用助通短信
+ * $sms = new \Dao\Sms('账号', '密码', 'yunxin');   //使用中国移动短信，记得要先在对应平台设置短信模版
+ * $sms = new \Dao\Sms('账号', '密码', 'qcloud', ['type' => 0, 'nation_code' => '86']);   //使用腾讯云,记得要先在对应平台设置短信模版
+ * $content = [
+    'sign_name' => '【酷云】',
+    'template_code' => 'SMS_273615016',
+    'template_param' => ['code' => '12345']
+];
+ * $sms = new \Dao\Sms('账号', '密码', 'aliyun', ['endpoint' => '']);   //使用阿里云，记得要先在对应平台设置短信模版
  * $sms->send($mobile, $content);
  * Author: fudaoji<fdj@kuryun.cn>
  */
@@ -24,14 +30,14 @@ class Sms
     protected $driver;
     protected $error;
 
-    public function __construct($account, $pwd, $driver)
+    public function __construct($account, $pwd, $driver, $options = [])
     {
         if(empty($account) || empty($pwd) || empty($driver)){
             throw new \Exception("短信配置信息不完整");
         }
         $this->driver = $driver;
         $class = '\\Dao\\Sms\\Driver\\' . ucfirst(strtolower($this->driver));
-        $this->api = new $class($account, $pwd);
+        $this->api = new $class($account, $pwd, $options);
         if(!$this->api){
             throw new \Exception("不存在短信驱动：{$driver}");
         }
