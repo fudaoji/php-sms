@@ -19,7 +19,14 @@ $mobile = '13511111111';  //单发
 $sms = new Sms('账号', '密码', 'shiyuan');   //使用示远短信
 $sms = new Sms('账号', '密码', 'zhutong');   //使用助通短信
 $sms = new Sms('账号', '密码', 'yunxin');   //使用中国移动短信，记得要先在对应平台设置短信模版
-$sms = new Sms('账号', '密码', 'qcloud');   //使用腾讯云,记得要先在对应平台设置短信模版
+$sms = new Sms('账号', '密码', 'qcloud', ['type' => 0, 'nation_code' => '86']);   //使用腾讯云,记得要先在对应平台设置短信模版
+
+$content = [
+    'sign_name' => '酷云',
+    'template_code' => 'SMS_273615016',
+    'template_param' => ['code' => '12345']
+];
+$sms = new Sms('账号', '密码', 'aliyun', ['endpoint' => '']);   //使用阿里云，记得要先在对应平台设置短信模版
 $res = $sms->send($mobile, $content);
 if($res !== true){
     var_dump($sms->getError());  //错误信息

@@ -13,7 +13,7 @@
  * $sms = new \Dao\Sms('账号', '密码', 'yunxin');   //使用中国移动短信，记得要先在对应平台设置短信模版
  * $sms = new \Dao\Sms('账号', '密码', 'qcloud', ['type' => 0, 'nation_code' => '86']);   //使用腾讯云,记得要先在对应平台设置短信模版
  * $content = [
-    'sign_name' => '【酷云】',
+    'sign_name' => '酷云',
     'template_code' => 'SMS_273615016',
     'template_param' => ['code' => '12345']
 ];
