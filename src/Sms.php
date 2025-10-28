@@ -30,6 +30,12 @@ class Sms
     protected $driver;
     protected $error;
 
+    const ACLOUD = 'acloud';
+    const QCLOUD = 'qcloud';
+    const ZHUTONG = 'zhutong';
+    const YUNXIN = 'yunxin';
+    const SHIYUAN = 'shiyuan';
+
     public function __construct($account, $pwd, $driver, $options = [])
     {
         if(empty($account) || empty($pwd) || empty($driver)){
