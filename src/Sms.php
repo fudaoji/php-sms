@@ -73,4 +73,15 @@ class Sms
     public function getError(){
         return $this->api->getError();
     }
+
+    static function drivers($id = ''){
+        $list = [
+            self::ACLOUD => '阿里云',
+            self::QCLOUD => '腾讯云',
+            self::ZHUTONG => '助通',
+            self::SHIYUAN => '示远科技',
+            self::YUNXIN => '云信'
+        ];
+        return $list[$id] ?? $list;
+    }
 }
