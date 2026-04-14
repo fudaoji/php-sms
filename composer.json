@@ -9,7 +9,8 @@
         }
     ],
     "require": {
-        "php": ">=7.1.0"
+        "php": ">=7.1.0",
+        "alibabacloud/dysmsapi-20170525": "2.0.24"
     },
     "autoload": {
         "psr-4": {
